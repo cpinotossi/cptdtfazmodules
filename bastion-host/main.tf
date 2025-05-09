@@ -1,7 +1,7 @@
 resource "azurerm_public_ip" "pip" {
   name                = var.name
   location            = var.location
-  resource_group_name = var.resource_group
+  resource_group_name = var.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
 }
@@ -9,9 +9,9 @@ resource "azurerm_public_ip" "pip" {
 resource "azurerm_bastion_host" "bastion" {
   name                = var.name
   location            = var.location
-  resource_group_name = var.resource_group
-  sku                 = "Standard"
-tunneling_enabled = true
+  resource_group_name = var.resource_group_name
+  sku                 = var.bastion_sku
+  tunneling_enabled   = var.bastion_sku == "Standard" ? true : false
   ip_configuration {
     name                 = var.name
     subnet_id            = var.subnet_id
