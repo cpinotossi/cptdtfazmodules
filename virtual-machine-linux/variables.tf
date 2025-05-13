@@ -1,8 +1,3 @@
-variable "subscription_id" {
-  description = "Azure subscription ID"
-  type        = string
-}
-
 variable "resource_group" {
   description = "resource group name"
   type        = any
