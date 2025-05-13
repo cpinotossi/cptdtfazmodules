@@ -1,3 +1,17 @@
+provider "azurerm" {
+  alias           = "default"
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+  }
+  storage_use_azuread = true
+  environment         = "public"
+  use_cli             = true
+  subscription_id     = var.subscription_id
+}
+
+
 ####################################################
 # interfaces
 ####################################################
@@ -14,6 +28,7 @@ resource "azurerm_network_interface" "nic" {
     private_ip_address_allocation = "Dynamic"
     private_ip_address_version    = "IPv4"
   }
+  provider = azurerm.default
 }
 
 ####################################################
@@ -51,6 +66,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
    bypass_platform_safety_checks_on_user_schedule_enabled = true
    patch_assessment_mode = "AutomaticByPlatform"
    patch_mode = "AutomaticByPlatform"
+   provider = azurerm.default
 }
 
 ####################################################
@@ -63,6 +79,7 @@ resource "azurerm_virtual_machine_extension" "vm_extension" {
   publisher            = "Microsoft.Azure.NetworkWatcher"
   type                 = "NetworkWatcherAgentLinux"
   type_handler_version = "1.4"
+  provider = azurerm.default
   depends_on           = [azurerm_linux_virtual_machine.vm]
 }
 
@@ -72,6 +89,7 @@ resource "azurerm_virtual_machine_extension" "aad_ssh" {
   publisher            = "Microsoft.Azure.ActiveDirectory"
   type                 = "AADSSHLoginForLinux"
   type_handler_version = "1.0"
+  provider = azurerm.default
   depends_on           = [azurerm_linux_virtual_machine.vm]
 }
 
@@ -83,4 +101,5 @@ resource "azurerm_role_assignment" "vm_admin" {
   principal_id   = var.admin_principal_id
   role_definition_name = "Virtual Machine Administrator Login"
   scope          = azurerm_linux_virtual_machine.vm.id
+  provider = azurerm.default
 }
